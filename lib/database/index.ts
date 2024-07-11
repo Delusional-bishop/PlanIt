@@ -2,7 +2,12 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-let cached = (global as any).mongoose || { conn: null, promise: null };
+interface Mongoose {
+  conn:Mongoose | null;
+  promise:Promise<Mongoose>;
+}
+
+let cached:Mongoose = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
   if (cached.conn) return cached.conn;
@@ -12,6 +17,7 @@ export const connectToDatabase = async () => {
   cached.promise = cached.promise || mongoose.connect(MONGODB_URI, {
     dbName: 'PlanIt',
     bufferCommands: false,
+    connectTimeoutMS:30000,
   })
 
   cached.conn = await cached.promise;
