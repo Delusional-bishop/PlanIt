@@ -26,7 +26,7 @@ import Image from "next/image"
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Date } from "mongoose"
+
 
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -142,13 +142,17 @@ const eventForm = ({userId,type}:EventFormProps) => {
                     <Image src='/assets/icons/calendar.svg' alt="calender" width={24} height={24} className="filter-grey"/>
                     <p className="ml-3 whitespace-nowrap text-grey-600">Start date</p>
                     <DatePicker 
-                    selected={field.value} 
-                    onChange={(date: Date) => field.onChange(date)}
-                    showTimeSelect
-                    timeInputLabel="Time:"
-                    dateFormat='MM/dd/yyyy h:mm aa' 
-                    wrapperClassName="datePicker"
-                     />
+                        selected={field.value} 
+                        onChange={(date: Date | null) => {
+                          if (date !== null) {
+                            field.onChange(date);
+                          }
+                        }}
+                        showTimeSelect
+                        timeInputLabel="Time:"
+                        dateFormat='MM/dd/yyyy h:mm aa' 
+                        wrapperClassName="datePicker"
+                      />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -166,13 +170,17 @@ const eventForm = ({userId,type}:EventFormProps) => {
                     <Image src='/assets/icons/calendar.svg' alt="calender" width={24} height={24} className="filter-grey"/>
                     <p className="ml-3 whitespace-nowrap text-grey-600">End date</p>
                     <DatePicker 
-                    selected={field.value} 
-                    onChange={(date: Date) => field.onChange(date)}
-                    showTimeSelect
-                    timeInputLabel="Time:"
-                    dateFormat='MM/dd/yyyy h:mm aa' 
-                    wrapperClassName="datePicker"
-                     />
+                        selected={field.value} 
+                        onChange={(date: Date | null) => {
+                          if (date !== null) {
+                            field.onChange(date);
+                          }
+                        }}
+                        showTimeSelect
+                        timeInputLabel="Time:"
+                        dateFormat='MM/dd/yyyy h:mm aa' 
+                        wrapperClassName="datePicker"
+                      />
                   </div>
                 </FormControl>
                 <FormMessage />
