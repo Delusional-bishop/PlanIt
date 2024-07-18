@@ -16,19 +16,22 @@ import {
 } 
 from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { eventformSchema } from "@/lib/validator"
+import { eventFormSchema } from "@/lib/validator"
 import { eventDefaultValues } from "@/constants"
 import Dropdown from "./Dropdown"
 import { Textarea } from "../ui/textarea"
 import { useState } from "react"
 import { FileUploader } from "./FileUploader"
 import Image from "next/image"
+import { useUploadThing } from "@/lib/uploadthing"
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRouter } from "next/navigation"
+import { createEvent } from "@/lib/actions/event.action"
 
 
 type EventFormProps={
@@ -39,15 +42,46 @@ type EventFormProps={
 const eventForm = ({userId,type}:EventFormProps) => {
   const [files,setFiles]= useState<File[]>([])
   const initialValues= eventDefaultValues;
+  const router=useRouter();
 
-  const form = useForm<z.infer<typeof eventformSchema>>({
-    resolver: zodResolver(eventformSchema),
+  const {startUpload}=useUploadThing('imageUploader')
+  
+  const form = useForm<z.infer<typeof eventFormSchema>>({
+    resolver: zodResolver(eventFormSchema),
     defaultValues: initialValues
   })
  
 // Idhar -->👋
-  function onSubmit(values: z.infer<typeof eventformSchema>) {
-    console.log(values)
+ async function onSubmit(values: z.infer<typeof eventFormSchema>) {
+
+    let uploadedImageUrl=values.imageUrl;
+
+    if(files.length>0){
+      const uploadedImages=await startUpload(files)
+
+      if(!uploadedImages){
+          return
+      }
+        uploadedImageUrl= uploadedImages[0].url
+    }
+    if (type==='Create'){
+      try {
+        const newEvent=await createEvent({
+          event :{...values,imageUrl:uploadedImageUrl},
+          userId,
+          path:'/profile'
+        })
+        
+        if(newEvent){
+          form.reset();
+          router.push(`/events/${newEvent._id}`)
+        }
+
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
   }
 
   return (
